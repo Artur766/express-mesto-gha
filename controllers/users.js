@@ -44,15 +44,12 @@ module.exports.updateUserInfo = (req, res) => {
       runValidators: true, // данные будут валидированы перед изменением
     },
   )
-    .orFail()
     .then((user) => {
-      if (!user) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
+      // if (!user) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-      if (err.name === 'DocumentNotFoundError') return res.status(404).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-      if (err.name === 'CastError') return res.status(404).send({ message: 'Переданы некорректные данные с некорректным id.' });
       return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
     });
 };
@@ -69,15 +66,12 @@ module.exports.updateUserAvatar = (req, res) => {
       runValidators: true, // данные будут валидированы перед изменением
     },
   )
-    .orFail()
     .then((user) => {
-      if (!user) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
+      // if (!user) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-      if (err.name === 'DocumentNotFoundError') return res.status(404).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-      if (err.name === 'CastError') return res.status(404).send({ message: 'Переданы некорректные данные с некорректным id.' });
       return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
     });
 };
