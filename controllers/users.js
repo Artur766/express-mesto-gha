@@ -11,10 +11,13 @@ module.exports.getUserId = (req, res) => {
   // ищет запись по идентификатору
   User.findById(req.params.userId)
     .then((user) => {
-      if (!user) return res.status(400).send({ message: 'Запрашиваемый пользователь не найден.' });
+      if (!user) return res.status(404).send({ message: 'Запрашиваемый пользователь не найден.' });
       return res.send(user);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные с некорректным id.' });
+      return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
+    });
 };
 
 module.exports.createUser = (req, res) => {
