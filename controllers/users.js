@@ -15,7 +15,7 @@ module.exports.getUserId = (req, res) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные с некорректным id.' });
+      if (err.name === 'CastError') return res.status(400).send({ message: 'Переданы некорректные данные с некорректным id.' });
       return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
     });
 };
