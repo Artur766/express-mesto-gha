@@ -44,11 +44,10 @@ module.exports.updateUserInfo = (req, res) => {
       runValidators: true, // данные будут валидированы перед изменением
     },
   )
-    .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-      if (err.name === 'CastError') return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
+      if (err.status === 404) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
       return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
     });
 };
@@ -65,11 +64,13 @@ module.exports.updateUserAvatar = (req, res) => {
       runValidators: true, // данные будут валидированы перед изменением
     },
   )
-    .orFail()
-    .then((user) => res.send(user))
+    .then((user) => {
+      // if (!user) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
+      return res.send(user);
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-      if (err.name === 'CastError') return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
+      if (err.status === 404) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
       return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
     });
 };
