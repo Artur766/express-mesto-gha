@@ -45,8 +45,11 @@ module.exports.updateUserInfo = (req, res) => {
     },
   )
     .then((user) => {
-      // if (!user) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
-      return res.send(user);
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
+        return;
+      }
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
@@ -67,8 +70,11 @@ module.exports.updateUserAvatar = (req, res) => {
     },
   )
     .then((user) => {
-      // if (!user) return res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
-      return res.send(user);
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь с указанным id не найден.' });
+        return;
+      }
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
