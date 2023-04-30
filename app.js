@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const helmet = require('helmet');
+
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -18,6 +20,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
     console.error(`Ошибка подключения к базе данных: ${err.message}`);
     process.exit(1);
   });
+
+app.use(helmet());
 
 app.use((req, res, next) => {
   req.user = {
