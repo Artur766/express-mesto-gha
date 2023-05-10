@@ -29,8 +29,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
 app.use(helmet());
 
 // роуты, не требующие авторизации,
-app.post('/signin', signIn, login);
 app.post('/signup', signUp, createUser);
+app.post('/signin', signIn, login);
 
 // авторизация
 app.use(auth);
@@ -50,7 +50,6 @@ app.use((err, req, res) => {
   res
     .status(statusCode)
     .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
         ? 'Произошла внутренняя ошибка сервера.'
         : message,
