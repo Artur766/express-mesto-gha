@@ -2,13 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-
+const { errors } = require('celebrate');
 const { signIn, signUp } = require('./middlewares/validations');
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { handleError } = require('./middlewares/handleError');
-const { errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 

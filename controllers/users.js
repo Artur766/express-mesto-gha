@@ -33,7 +33,6 @@ module.exports.createUser = (req, res, next) => {
     avatar,
     email,
   } = req.body;
-  console.log(email);
   User.findOne({ email })
     .then((data) => {
       if (!data) return next(new ConflictError('Пользовтаель с таким email уже существует.'));
