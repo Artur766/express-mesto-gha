@@ -4,6 +4,7 @@ const User = require('../models/user');
 
 const BadRequestError = require('../errors/bad-request-err');
 const NotFoundError = require('../errors/not-found-err');
+const ConflictError = require('../errors/conflict-err');
 
 module.exports.getUsers = (req, res, next) => {
   // найти вообще всех
@@ -33,24 +34,29 @@ module.exports.createUser = (req, res, next) => {
     email,
   } = req.body;
 
-  bcrypt.hash(req.body.password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    })
-      .then((user) => res.status(201).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-      }))
-      .catch((err) => {
-        if (err.name === 'ValidationError') return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
-        return next(err);
-      }));
+  User.findOne({ email })
+    .then((existingUser) => {
+      if (!existingUser) throw new ConflictError('Пользователь с таким email уже существует');
+
+      return bcrypt.hash(req.body.password, 10)
+        .then((hash) => User.create({
+          name,
+          about,
+          avatar,
+          email,
+          password: hash,
+        })
+          .then((user) => res.status(201).send({
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+          }))
+          .catch((err) => {
+            if (err.name === 'ValidationError') return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+            return next(err);
+          }));
+    });
 };
 
 module.exports.updateUserInfo = (req, res, next) => {

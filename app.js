@@ -47,13 +47,11 @@ app.use((err, req, res) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
 
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'Произошла внутренняя ошибка сервера.'
-        : message,
-    });
+  res.status(statusCode).send({
+    message: statusCode === 500
+      ? 'Произошла внутренняя ошибка сервера.'
+      : message,
+  });
 });
 
 app.listen(PORT, () => {
