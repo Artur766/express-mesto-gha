@@ -1,19 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
-
-const helmet = require('helmet');
-
-const { PORT = 3000 } = process.env;
-
-const app = express();
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 
 const { signIn, signUp } = require('./middlewares/validations');
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-
 const { handleError } = require('./middlewares/handleError');
+const { errors } = require('celebrate');
+
+const { PORT = 3000 } = process.env;
+
+const app = express();
 
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
@@ -45,6 +44,7 @@ app.use('/*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });
 });
 
+app.use(errors());
 app.use(handleError);
 
 app.listen(PORT, () => {
