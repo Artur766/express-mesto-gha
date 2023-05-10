@@ -35,22 +35,24 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   User.findOne({ email })
-    .then((existingUser) => {
-      if (!existingUser) throw new ConflictError('Пользователь с таким email уже существует');
+    .then((data) => {
+      if (!data) next(new ConflictError(`Пользовтаель с таким ${email} уже существует.`));
 
       return bcrypt.hash(req.body.password, 10)
         .then((hash) => User.create({
+          email,
+          password: hash,
           name,
           about,
           avatar,
-          email,
-          password: hash,
+
         })
           .then((user) => res.status(201).send({
             name: user.name,
             about: user.about,
             avatar: user.avatar,
             email: user.email,
+            _id: user._id,
           }))
           .catch((err) => {
             if (err.name === 'ValidationError') return next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
