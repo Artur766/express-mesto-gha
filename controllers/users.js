@@ -35,7 +35,7 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
   User.findOne({ email })
     .then((data) => {
-      if (!data) return next(new ConflictError('Пользовтаель с таким email уже существует.'));
+      if (data) return next(new ConflictError('Пользовтаель с таким email уже существует.'));
 
       return bcrypt.hash(req.body.password, 10)
         .then((hash) => User.create({
@@ -125,8 +125,8 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(_id)
     .orFail(new Error('NotValidId'))
     .then((user) => {
-      if (!user) return;
-      res.send(user);
+      if (!user) return next(new NotFoundError('Пользователь не найден.'));
+      return res.send(user);
     })
     .catch((err) => {
       if (err.message === 'NotValidId') return next(new NotFoundError('Запрашиваемый пользователь не найден.'));
