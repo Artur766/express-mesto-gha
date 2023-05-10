@@ -8,6 +8,7 @@ const { signIn, signUp } = require('./middlewares/validations');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { handleError } = require('./middlewares/handleError');
+const NotFoundError = require('./errors/not-found-err');
 
 const { PORT = 3000 } = process.env;
 
@@ -39,9 +40,7 @@ app.use(auth);
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
 
-app.use('/*', (req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
-});
+app.use('/*', (req, res, next) => next(new NotFoundError('Страница не найдена')));
 
 app.use(errors());
 app.use(handleError);
