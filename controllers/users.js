@@ -48,10 +48,10 @@ module.exports.createUser = (req, res, next) => {
 
         })
           .then((user) => res.status(201).send({
+            email: user.email,
             name: user.name,
             about: user.about,
             avatar: user.avatar,
-            email: user.email,
             _id: user._id,
           }))
           .catch((err) => {

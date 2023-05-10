@@ -4,6 +4,20 @@ const validator = require('validator');
 const UnauthorizedError = require('../errors/unauthorized-err');
 
 const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: validator.isEmail,
+      message: 'Некорректный формат почты',
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false,
+  },
   name: {
     type: String,
     required: false,
@@ -22,20 +36,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    validate: {
-      validator: validator.isEmail,
-      message: 'Некорректный формат почты',
-    },
-  },
-  password: {
-    type: String,
-    required: true,
-    select: false,
   },
 }, { versionKey: false });
 

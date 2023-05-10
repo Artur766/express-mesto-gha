@@ -30,13 +30,13 @@ const signIn = celebrate({
 
 const signUp = celebrate({
   body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).max(24).required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().uri({
       scheme: ['http', 'https'],
     }).pattern(/\.(jpg|jpeg|png|gif)$/),
-    email: Joi.string().email().required(),
-    password: Joi.string().min(8).max(24).required(),
   }),
 });
 
