@@ -1,4 +1,6 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 module.exports.getUsers = (req, res) => {
   // найти вообще всех
@@ -21,14 +23,26 @@ module.exports.getUserId = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   // ищет запись по идентификатору
-  const { name, about, avatar } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+  } = req.body;
 
-  User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
-      return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
-    });
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    })
+      .then((user) => res.status(201).send(user))
+      .catch((err) => {
+        if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+        return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
+      }));
 };
 
 module.exports.updateUserInfo = (req, res) => {
@@ -75,4 +89,29 @@ module.exports.updateUserAvatar = (req, res) => {
       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
       return res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' });
     });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+      res.send({ token });
+    })
+    .catch((err) => res.status(401).send({ message: err.message }));
+};
+
+module.exports.getCurrentUser = (req, res) => {
+  const { _id } = req.user;
+  User.findById(_id)
+    .then((user) => {
+      if (!user) return;
+      res.send(user);
+    })
+    .catch((err) => res.status(500).send({ message: 'Произошла внутренняя ошибка сервера.' }));
 };

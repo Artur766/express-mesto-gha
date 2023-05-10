@@ -10,9 +10,8 @@ module.exports.getCards = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  const id = req.user._id;
 
-  Card.create({ name, link, owner: id })
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => card.populate('owner'))
     .then((card) => res.status(201).send(card))
     .catch((err) => {
@@ -25,7 +24,12 @@ module.exports.deleteCard = (req, res) => {
   // Удаление конкретной записи
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(new Error('NotValidId'))
-    .then((card) => res.send(card))
+    .then((card) => {
+      if (req.user._id !== card.owner.toString()) {
+        return res.status(403).send({ message: 'У вас нет прав на удаление этой карточки.' });
+      }
+      return res.send(card);
+    })
     .catch((err) => {
       if (err.message === 'NotValidId') return res.status(404).send({ message: 'Запрашиваемый карточка не найдена.' });
       if (err.name === 'CastError') return res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки.' });
