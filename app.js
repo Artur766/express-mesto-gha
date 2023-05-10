@@ -13,6 +13,8 @@ const { signIn, signUp } = require('./middlewares/validations');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
+const { handleError } = require('./middlewares/handleError');
+
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 
@@ -43,16 +45,7 @@ app.use('/*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });
 });
 
-app.use((err, req, res) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-
-  res.status(statusCode).send({
-    message: statusCode === 500
-      ? 'Произошла внутренняя ошибка сервера.'
-      : message,
-  });
-});
+app.use(handleError);
 
 app.listen(PORT, () => {
   console.log('Server started on port 3000');
