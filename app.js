@@ -8,6 +8,8 @@ const { PORT = 3000 } = process.env;
 const app = express();
 const bodyParser = require('body-parser');
 
+const { signIn, signUp } = require('./middlewares/validations');
+
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
@@ -27,8 +29,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
 app.use(helmet());
 
 // роуты, не требующие авторизации,
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', signIn, login);
+app.post('/signup', signUp, createUser);
 
 // авторизация
 app.use(auth);
@@ -41,7 +43,7 @@ app.use('/*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
 
