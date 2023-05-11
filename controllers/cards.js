@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res, next) => {
     .orFail(() => new NotFoundError('Пользователь с указанным id не существует'))
     .then((card) => {
       if (!card.owner.equals(req.user._id)) throw new FordBidden('У вас нет прав на удаление этой карточки.');
-      Card.deleteOne()
+      card.deleteOne()
         .then(() => res.send({ message: 'Карточка успешна удалена.' }))
         .catch(next);
     })
