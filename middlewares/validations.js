@@ -1,5 +1,7 @@
 const { celebrate, Joi } = require('celebrate');
 
+const urlValidator = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/;
+
 const userIdValidation = celebrate({
   params: Joi.object().keys({
     userId: Joi.string().hex().length(24).required(),
@@ -17,7 +19,7 @@ const userUpdateAvatarValidation = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().uri({
       scheme: ['http', 'https'],
-    }).pattern(/^https?:\/\/(www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+#?$/),
+    }).pattern(urlValidator),
   }),
 });
 
@@ -36,7 +38,7 @@ const signUp = celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().uri({
       scheme: ['http', 'https'],
-    }).pattern(/^https?:\/\/(www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+#?$/),
+    }).pattern(urlValidator),
   }),
 });
 
@@ -45,7 +47,7 @@ const cardCreateValidation = celebrate({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().uri({
       scheme: ['http', 'https'],
-    }).pattern(/^https?:\/\/(www\.)?[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+#?$/),
+    }).pattern(urlValidator),
   }),
 });
 

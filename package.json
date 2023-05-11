@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "dev": "nodemon app.js"
   },
   "repository": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/Artur766/express-mesto-gha.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Adgamov Artur",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Artur766/express-mesto-gha/issues"

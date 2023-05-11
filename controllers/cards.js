@@ -24,17 +24,15 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  // Удаление конкретной записи
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail(new Error('NotValidId'))
+  Card.findById(req.params.cardId)
+    .orFail(() => new NotFoundError('Пользователь с указанным id не существует'))
     .then((card) => {
-      if (req.user._id !== card.owner.toString()) {
-        throw new FordBidden('У вас нет прав на удаление этой карточки.');
-      }
-      return res.send(card);
+      if (!card.owner.equals(req.user._id)) throw new FordBidden('У вас нет прав на удаление этой карточки.');
+      Card.deleteOne()
+        .then(() => res.send({ message: 'Карточка успешна удалена.' }))
+        .catch(next);
     })
     .catch((err) => {
-      if (err.message === 'NotValidId') return next(new NotFoundError('Запрашиваемый карточка не найдена.'));
       if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные для удаления карточки.'));
       return next(err);
     });
@@ -46,10 +44,9 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .orFail(new Error('NotValidId'))
+    .orFail(() => new NotFoundError('Пользователь с указанным id не существует'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'NotValidId') return next(new NotFoundError('Запрашиваемый карточка не найдена.'));
       if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные для постановки лайка.'));
       return next(err);
     });
@@ -61,10 +58,9 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .orFail(new Error('NotValidId'))
+    .orFail(() => new NotFoundError('Пользователь с указанным id не существует'))
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.message === 'NotValidId') next(new NotFoundError('Запрашиваемый карточка не найдена.'));
       if (err.name === 'CastError') return next(new BadRequestError('Переданы некорректные данные для снятии лайка.'));
       return next(err);
     });
